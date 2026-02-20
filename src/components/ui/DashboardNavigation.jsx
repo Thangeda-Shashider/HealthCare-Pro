@@ -44,7 +44,7 @@ const DashboardNavigation = ({ userRole = 'patient', isCollapsed = false, onTogg
       {
         title: 'Patient Management',
         items: [
-          { path: '/patient-list', label: 'Patients', icon: 'Users', description: 'View all patients' },
+          { path: '/patient-management', label: 'Patients', icon: 'Users', description: 'View all patients' },
           { path: '/appointments', label: 'Appointments', icon: 'Calendar', description: 'Manage schedule' },
           { path: '/consultations', label: 'Consultations', icon: 'Video', description: 'Virtual consultations' }
         ]
@@ -52,6 +52,7 @@ const DashboardNavigation = ({ userRole = 'patient', isCollapsed = false, onTogg
       {
         title: 'Clinical Tools',
         items: [
+          { path: '/clinical-tools', label: 'Calculators & Tools', icon: 'Tool', description: 'Clinical utilities' },
           { path: '/medical-records', label: 'Medical Records', icon: 'FolderOpen', description: 'Patient records' },
           { path: '/lab-orders', label: 'Lab Orders', icon: 'TestTube', description: 'Order tests' }
         ]
@@ -110,9 +111,8 @@ const DashboardNavigation = ({ userRole = 'patient', isCollapsed = false, onTogg
         <Icon name={isMobileOpen ? 'X' : 'Menu'} size={24} />
       </button>
       <aside
-        className={`dashboard-navigation ${isCollapsed ? 'collapsed' : ''} ${
-          isMobileOpen ? 'open translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`dashboard-navigation ${isCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'open translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div className="dashboard-navigation-header">
           {!isCollapsed && (
@@ -141,9 +141,8 @@ const DashboardNavigation = ({ userRole = 'patient', isCollapsed = false, onTogg
                   <button
                     key={item?.path}
                     onClick={() => handleNavigation(item?.path)}
-                    className={`dashboard-navigation-item ${
-                      isActivePath(item?.path) ? 'active' : ''
-                    }`}
+                    className={`dashboard-navigation-item ${isActivePath(item?.path) ? 'active' : ''
+                      }`}
                     title={isCollapsed ? item?.label : item?.description}
                   >
                     <Icon name={item?.icon} size={20} />

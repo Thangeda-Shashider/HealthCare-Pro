@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const PendingTaskItem = ({ task, onComplete }) => {
+const PendingTaskItem = ({ task, onComplete, onView }) => {
   const getPriorityColor = (priority) => {
     const colors = {
       urgent: 'bg-error/10 border-error text-error',
@@ -29,7 +29,7 @@ const PendingTaskItem = ({ task, onComplete }) => {
         <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
           <Icon name={getTaskIcon(task?.type)} size={18} color="var(--color-primary)" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h4 className="text-sm md:text-base font-medium text-foreground line-clamp-1">
@@ -39,24 +39,33 @@ const PendingTaskItem = ({ task, onComplete }) => {
               {task?.priority}
             </span>
           </div>
-          
+
           <p className="text-xs md:text-sm text-muted-foreground mb-2 line-clamp-2">
             {task?.description}
           </p>
-          
+
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Icon name="Clock" size={14} />
               <span className="whitespace-nowrap">{task?.dueTime}</span>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
+              size="sm"
+              iconName="Eye"
+              iconPosition="left"
+              onClick={() => onView(task)}
+            >
+              View
+            </Button>
+            <Button
+              variant="default"
               size="sm"
               iconName="Check"
               iconPosition="left"
               onClick={() => onComplete(task?.id)}
             >
-              Complete
+              Finish
             </Button>
           </div>
         </div>

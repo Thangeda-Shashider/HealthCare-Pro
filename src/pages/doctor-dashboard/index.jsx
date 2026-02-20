@@ -10,6 +10,8 @@ import PendingTaskItem from './components/PendingTaskItem';
 import PatientSearchBar from './components/PatientSearchBar';
 import CalendarSyncStatus from './components/CalendarSyncStatus';
 import UrgentNotificationBanner from './components/UrgentNotificationBanner';
+import PatientProfileModal from './components/PatientProfileModal';
+import CreateTaskModal from './components/CreateTaskModal';
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -17,6 +19,11 @@ const DoctorDashboard = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date('2025-12-28'));
   const [urgentNotification, setUrgentNotification] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [showPatientsModal, setShowPatientsModal] = useState(false);
+  const [showAllTasksModal, setShowAllTasksModal] = useState(false);
+  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
+  const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
 
   const todayAppointments = [
     {
@@ -87,7 +94,7 @@ const DoctorDashboard = () => {
     }
   ];
 
-  const pendingTasks = [
+  const [pendingTasks, setPendingTasks] = useState([
     {
       id: "TASK001",
       type: "prescription",
@@ -120,7 +127,7 @@ const DoctorDashboard = () => {
       priority: "urgent",
       dueTime: "45 min"
     }
-  ];
+  ]);
 
   const recentPatients = [
     { id: "PAT001", name: "Sarah Johnson" },
@@ -189,11 +196,31 @@ const DoctorDashboard = () => {
   };
 
   const handleCompleteTask = (taskId) => {
-    console.log('Completing task:', taskId);
+    setPendingTasks(prev => prev.filter(task => task.id !== taskId));
+
+    // Also check if it matches the urgent notification
+    if (urgentNotification?.id === taskId) {
+      setUrgentNotification(null);
+    }
+
+    if (selectedTask?.id === taskId) {
+      setSelectedTask(null);
+    }
+  };
+
+  const handleViewTask = (task) => {
+    setSelectedTask(task);
   };
 
   const handlePatientSelect = (patient) => {
-    console.log('Selected patient:', patient);
+    // Show full profile
+    const fullProfile = [...todayAppointments, ...recentPatients].find(p => p.id === patient.id && p.age) || patient;
+    setSelectedPatientProfile(fullProfile);
+    setShowPatientsModal(false);
+  };
+
+  const handleAddTask = (newTask) => {
+    setPendingTasks(prev => [newTask, ...prev]);
   };
 
   const handleManualSync = () => {
@@ -208,7 +235,14 @@ const DoctorDashboard = () => {
   };
 
   const handleViewNotificationDetails = () => {
-    console.log('Viewing notification details');
+    if (urgentNotification) {
+      setSelectedTask({
+        ...urgentNotification,
+        description: urgentNotification.message,
+        dueTime: urgentNotification.time,
+        type: 'emergency'
+      });
+    }
   };
 
   return (
@@ -222,9 +256,8 @@ const DoctorDashboard = () => {
         />
 
         <main
-          className={`flex-1 transition-smooth ${
-            isNavCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[280px]'
-          }`}
+          className={`flex-1 transition-smooth ${isNavCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[280px]'
+            }`}
         >
           <div className="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
             <div className="mb-6 md:mb-8">
@@ -268,11 +301,11 @@ const DoctorDashboard = () => {
                         Today's Schedule
                       </h2>
                       <p className="text-sm text-muted-foreground">
-                        {selectedDate?.toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
+                        {selectedDate?.toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
                         })}
                       </p>
                     </div>
@@ -317,6 +350,7 @@ const DoctorDashboard = () => {
                         key={task?.id}
                         task={task}
                         onComplete={handleCompleteTask}
+                        onView={handleViewTask}
                       />
                     ))}
                   </div>
@@ -325,9 +359,10 @@ const DoctorDashboard = () => {
                     variant="outline"
                     size="sm"
                     fullWidth
-                    iconName="Plus"
+                    iconName="List"
                     iconPosition="left"
                     className="mt-4"
+                    onClick={() => setShowAllTasksModal(true)}
                   >
                     View All Tasks
                   </Button>
@@ -358,18 +393,9 @@ const DoctorDashboard = () => {
                       variant="outline"
                       size="sm"
                       fullWidth
-                      iconName="Calendar"
-                      iconPosition="left"
-                      onClick={() => navigate('/appointment-booking')}
-                    >
-                      Schedule Appointment
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      fullWidth
                       iconName="Users"
                       iconPosition="left"
+                      onClick={() => setShowPatientsModal(true)}
                     >
                       View All Patients
                     </Button>
@@ -378,6 +404,105 @@ const DoctorDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Task Details Modal */}
+          {selectedTask && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div className="bg-card w-full max-w-md rounded-xl border border-border shadow-2xl p-6 animate-in fade-in zoom-in duration-200">
+                <h3 className="text-xl font-bold mb-2">{selectedTask.title}</h3>
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</span>
+                    <p className="text-foreground mt-1">{selectedTask.description}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div>
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Priority</span>
+                      <p className="text-foreground mt-1 capitalize">{selectedTask.priority}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Due Time</span>
+                      <p className="text-foreground mt-1">{selectedTask.dueTime}</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 mt-6">
+                    <Button variant="outline" onClick={() => setSelectedTask(null)}>Close</Button>
+                    <Button onClick={() => handleCompleteTask(selectedTask.id)}>Finish Task</Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Patients List Modal */}
+          {showPatientsModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div className="bg-card w-full max-w-2xl rounded-xl border border-border shadow-2xl p-6 animate-in fade-in zoom-in duration-200 max-h-[80vh] overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold">All Patients</h3>
+                  <Button variant="ghost" size="sm" iconName="X" onClick={() => setShowPatientsModal(false)} />
+                </div>
+                <div className="overflow-y-auto flex-1 space-y-2 pr-2">
+                  {/* Mocking a larger list by combining recentPatients and todayAppointments */}
+                  {[...recentPatients, ...todayAppointments.map(a => ({ id: a.id, name: a.patientName }))].map((patient, i) => (
+                    <div key={`${patient.id}-${i}`} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                      <span className="font-medium">{patient.name}</span>
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        handlePatientSelect(patient);
+                        setShowPatientsModal(false);
+                      }}>View Profile</Button>
+                    </div>
+                  ))}
+                  <div className="p-3 text-center text-muted-foreground text-sm">
+                    Showing all active patients
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-end">
+                  <Button variant="outline" onClick={() => setShowPatientsModal(false)}>Close</Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* All Tasks Modal */}
+          {showAllTasksModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div className="bg-card w-full max-w-2xl rounded-xl border border-border shadow-2xl p-6 animate-in fade-in zoom-in duration-200 max-h-[80vh] overflow-hidden flex flex-col">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold">All Pending Tasks</h3>
+                  <div className="flex gap-2">
+                    <Button size="sm" iconName="Plus" iconPosition="left" onClick={() => setShowCreateTaskModal(true)}>Create Task</Button>
+                    <Button variant="ghost" size="icon" iconName="X" onClick={() => setShowAllTasksModal(false)} />
+                  </div>
+                </div>
+                <div className="overflow-y-auto flex-1 space-y-3 pr-2">
+                  {pendingTasks.length > 0 ? pendingTasks.map((task) => (
+                    <PendingTaskItem
+                      key={task.id}
+                      task={task}
+                      onComplete={handleCompleteTask}
+                      onView={handleViewTask}
+                    />
+                  )) : (
+                    <div className="text-center py-10 text-muted-foreground">
+                      No pending tasks. Great job!
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <CreateTaskModal
+            isOpen={showCreateTaskModal}
+            onClose={() => setShowCreateTaskModal(false)}
+            onSave={handleAddTask}
+          />
+
+          <PatientProfileModal
+            patient={selectedPatientProfile}
+            onClose={() => setSelectedPatientProfile(null)}
+          />
         </main>
       </div>
     </div>

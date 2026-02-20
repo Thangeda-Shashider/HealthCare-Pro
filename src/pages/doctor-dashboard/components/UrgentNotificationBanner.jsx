@@ -20,7 +20,7 @@ const UrgentNotificationBanner = ({ notification, onDismiss, onViewDetails }) =>
         <div className="w-10 h-10 rounded-lg bg-error/20 flex items-center justify-center flex-shrink-0">
           <Icon name="AlertCircle" size={20} color="var(--color-error)" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h4 className="text-sm md:text-base font-semibold text-foreground">
@@ -34,11 +34,11 @@ const UrgentNotificationBanner = ({ notification, onDismiss, onViewDetails }) =>
               <Icon name="X" size={16} />
             </button>
           </div>
-          
+
           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {notification?.message}
           </p>
-          
+
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="default"
@@ -48,6 +48,15 @@ const UrgentNotificationBanner = ({ notification, onDismiss, onViewDetails }) =>
               onClick={onViewDetails}
             >
               View Details
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              iconName="Check"
+              iconPosition="left"
+              onClick={onDismiss}
+            >
+              Finish
             </Button>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Icon name="Clock" size={14} />

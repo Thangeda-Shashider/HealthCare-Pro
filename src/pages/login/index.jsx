@@ -1,81 +1,100 @@
 import React, { useEffect } from 'react';
 import LoginForm from './components/LoginForm';
-import TrustSignals from './components/TrustSignals';
-import WelcomeSection from './components/WelcomeSection';
 import Icon from '../../components/AppIcon';
 
 const Login = () => {
   useEffect(() => {
-    document.title = 'Login - HealthCare Pro';
+    document.title = 'Sign In - HealthCare Pro';
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 lg:gap-16 items-start">
-          <div className="order-2 lg:order-1">
-            <WelcomeSection />
-          </div>
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 40%, #f0fdfa 100%)' }}>
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, #0d9488, transparent)' }}
+        />
+        <div
+          className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full opacity-15"
+          style={{ background: 'radial-gradient(circle, #1e40af, transparent)' }}
+        />
+      </div>
 
-          <div className="order-1 lg:order-2">
-            <div className="bg-card border border-border rounded-2xl shadow-elevation-2 p-6 md:p-8 lg:p-10 sticky top-6">
-              <div className="mb-6 md:mb-8">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-2 md:mb-3">
+      {/* Header */}
+      <header className="relative z-10 flex items-center justify-center pt-8 pb-4">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #0d9488, #0891b2)' }}
+          >
+            <Icon name="Heart" size={20} color="white" />
+          </div>
+          <div>
+            <span className="text-xl font-bold" style={{ color: '#0f172a' }}>HealthCare</span>
+            <span className="text-xl font-bold" style={{ color: '#0d9488' }}> Pro</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          {/* Card */}
+          <div
+            className="bg-white rounded-2xl shadow-xl overflow-hidden"
+            style={{ boxShadow: '0 20px 60px rgba(13, 148, 136, 0.12), 0 4px 20px rgba(0,0,0,0.08)' }}
+          >
+            {/* Card top accent bar */}
+            <div
+              className="h-1 w-full"
+              style={{ background: 'linear-gradient(90deg, #0d9488, #0891b2, #1d4ed8)' }}
+            />
+
+            <div className="px-8 pt-8 pb-10">
+              {/* Heading */}
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold mb-1" style={{ color: '#0f172a' }}>
                   Welcome Back
-                </h2>
-                <p className="text-sm md:text-base lg:text-lg text-muted-foreground">
-                  Sign in to access your healthcare dashboard
+                </h1>
+                <p className="text-sm" style={{ color: '#64748b' }}>
+                  Sign in to your healthcare account
                 </p>
               </div>
 
+              {/* Login Form with role selection */}
               <LoginForm />
+            </div>
+          </div>
 
-              <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-border">
-                <div className="flex items-center justify-center gap-4 md:gap-6 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <Icon name="Shield" size={16} color="var(--color-success)" />
-                    <span className="text-xs md:text-sm text-muted-foreground">HIPAA Compliant</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Icon name="Lock" size={16} color="var(--color-primary)" />
-                    <span className="text-xs md:text-sm text-muted-foreground">SSL Encrypted</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Icon name="CheckCircle" size={16} color="var(--color-secondary)" />
-                    <span className="text-xs md:text-sm text-muted-foreground">GDPR Certified</span>
-                  </div>
-                </div>
-              </div>
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-5 mt-6 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <Icon name="Shield" size={13} color="#0d9488" />
+              <span className="text-xs" style={{ color: '#64748b' }}>HIPAA Compliant</span>
+            </div>
+            <div className="w-1 h-1 rounded-full" style={{ background: '#cbd5e1' }} aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <Icon name="Lock" size={13} color="#0891b2" />
+              <span className="text-xs" style={{ color: '#64748b' }}>256-bit SSL</span>
+            </div>
+            <div className="w-1 h-1 rounded-full" style={{ background: '#cbd5e1' }} aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <Icon name="CheckCircle" size={13} color="#1d4ed8" />
+              <span className="text-xs" style={{ color: '#64748b' }}>GDPR Certified</span>
             </div>
           </div>
         </div>
+      </main>
 
-        <div className="mt-12 md:mt-16 lg:mt-20">
-          <TrustSignals />
-        </div>
-
-        <footer className="mt-12 md:mt-16 lg:mt-20 pt-8 md:pt-10 border-t border-border">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
-            <div className="flex items-center gap-2">
-              <Icon name="Heart" size={20} color="var(--color-primary)" />
-              <span className="text-sm md:text-base text-muted-foreground">
-                © {new Date()?.getFullYear()} HealthCare Pro. All rights reserved.
-              </span>
-            </div>
-            <div className="flex items-center gap-4 md:gap-6 flex-wrap justify-center">
-              <button className="text-sm md:text-base text-muted-foreground hover:text-foreground transition-smooth">
-                Privacy Policy
-              </button>
-              <button className="text-sm md:text-base text-muted-foreground hover:text-foreground transition-smooth">
-                Terms of Service
-              </button>
-              <button className="text-sm md:text-base text-muted-foreground hover:text-foreground transition-smooth">
-                Contact Support
-              </button>
-            </div>
-          </div>
-        </footer>
-      </div>
+      {/* Footer */}
+      <footer className="relative z-10 text-center pb-6 pt-2">
+        <p className="text-xs" style={{ color: '#94a3b8' }}>
+          © {new Date().getFullYear()} HealthCare Pro ·
+          <button className="ml-1 hover:underline" style={{ color: '#94a3b8' }}>Privacy</button> ·
+          <button className="ml-1 hover:underline" style={{ color: '#94a3b8' }}>Terms</button>
+        </p>
+      </footer>
     </div>
   );
 };

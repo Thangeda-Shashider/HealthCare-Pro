@@ -1,168 +1,334 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Input from '../../../components/ui/Input';
-import Button from '../../../components/ui/Button';
-import Select from '../../../components/ui/Select';
 import Icon from '../../../components/AppIcon';
 
+/* ─── Role definitions ──────────────────────────────────────────────── */
+const ROLES = [
+  {
+    id: 'doctor',
+    label: 'Doctor',
+    icon: 'Stethoscope',
+    description: 'Manage patients & schedules',
+    accent: '#0d9488',
+    accentLight: '#f0fdfa',
+    accentBorder: '#99f6e4',
+  },
+  {
+    id: 'patient',
+    label: 'Patient',
+    icon: 'User',
+    description: 'View records & appointments',
+    accent: '#0891b2',
+    accentLight: '#f0f9ff',
+    accentBorder: '#bae6fd',
+  },
+  {
+    id: 'administrator',
+    label: 'Admin',
+    icon: 'Settings',
+    description: 'Oversee hospital operations',
+    accent: '#1d4ed8',
+    accentLight: '#eff6ff',
+    accentBorder: '#bfdbfe',
+  },
+];
+
+const MOCK_CREDS = {
+  patient: { email: 'patient@healthcare.com', password: 'Patient@123' },
+  doctor: { email: 'doctor@healthcare.com', password: 'Doctor@123' },
+  administrator: { email: 'admin@healthcare.com', password: 'Admin@123' },
+};
+
+const DASHBOARD_ROUTES = {
+  patient: '/patient-dashboard',
+  doctor: '/doctor-dashboard',
+  administrator: '/administrator-dashboard',
+};
+
+/* ─── Component ─────────────────────────────────────────────────────── */
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: ''
-  });
+  const [selectedRole, setSelectedRole] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const roleOptions = [
-    { value: 'patient', label: 'Patient', description: 'Access your health records and appointments' },
-    { value: 'doctor', label: 'Doctor', description: 'Manage patient care and schedules' },
-    { value: 'administrator', label: 'Administrator', description: 'Oversee hospital operations' }
-  ];
+  const selectedRoleData = ROLES.find((r) => r.id === selectedRole);
 
-  const mockCredentials = {
-    patient: { email: 'patient@healthcare.com', password: 'Patient@123' },
-    doctor: { email: 'doctor@healthcare.com', password: 'Doctor@123' },
-    administrator: { email: 'admin@healthcare.com', password: 'Admin@123' }
+  /* ── Validation ── */
+  const validate = () => {
+    const errs = {};
+    if (!selectedRole) errs.role = 'Please choose your role to continue';
+    if (!email) {
+      errs.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errs.email = 'Please enter a valid email address';
+    }
+    if (!password) {
+      errs.password = 'Password is required';
+    } else if (password.length < 6) {
+      errs.password = 'Password must be at least 6 characters';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData?.email) {
-      newErrors.email = 'Email address is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/?.test(formData?.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData?.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData?.password?.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (!formData?.role) {
-      newErrors.role = 'Please select your role';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors)?.length === 0;
-  };
-
-  const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors?.[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    
-    if (!validateForm()) return;
-
+  /* ── Submit ── */
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validate()) return;
     setIsLoading(true);
-
     setTimeout(() => {
-      const credentials = mockCredentials?.[formData?.role];
-      
-      if (formData?.email === credentials?.email && formData?.password === credentials?.password) {
-        const dashboardRoutes = {
-          patient: '/patient-dashboard',
-          doctor: '/doctor-dashboard',
-          administrator: '/administrator-dashboard'
-        };
-        navigate(dashboardRoutes?.[formData?.role]);
+      const creds = MOCK_CREDS[selectedRole];
+      if (email === creds.email && password === creds.password) {
+        navigate(DASHBOARD_ROUTES[selectedRole]);
       } else {
         setErrors({
-          email: 'Invalid credentials. Please check your email and password.',
-          password: `Use ${credentials?.email} / ${credentials?.password} for ${formData?.role} login`
+          auth: `Invalid credentials. Use: ${creds.email} / ${creds.password}`,
         });
       }
       setIsLoading(false);
-    }, 1500);
+    }, 1400);
   };
 
+  /* ── Helpers ── */
+  const clearError = (field) => {
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const inputBase = {
+    display: 'block',
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '10px',
+    border: '1.5px solid #e2e8f0',
+    fontSize: '14px',
+    color: '#0f172a',
+    background: '#f8fafc',
+    outline: 'none',
+    transition: 'border-color 0.18s, box-shadow 0.18s',
+  };
+
+  const inputFocusStyle = (field) =>
+    errors[field]
+      ? { ...inputBase, borderColor: '#ef4444', background: '#fff7f7' }
+      : inputBase;
+
+  const accent = selectedRoleData?.accent || '#0d9488';
+
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-4 md:space-y-5 lg:space-y-6">
-      <div>
-        <Select
-          label="I am a"
-          placeholder="Select your role"
-          description="Choose your account type to continue"
-          options={roleOptions}
-          value={formData?.role}
-          onChange={(value) => handleChange('role', value)}
-          error={errors?.role}
-          required
-          size="default"
-        />
+    <form onSubmit={handleSubmit} noValidate>
+      {/* ── Step 1: Role Selection ── */}
+      <div className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>
+          I am a
+        </p>
+        <div className="grid grid-cols-3 gap-2.5">
+          {ROLES.map((role) => {
+            const isSelected = selectedRole === role.id;
+            return (
+              <button
+                key={role.id}
+                type="button"
+                onClick={() => {
+                  setSelectedRole(role.id);
+                  clearError('role');
+                  clearError('auth');
+                }}
+                className="flex flex-col items-center gap-2 py-3.5 px-2 rounded-xl border-2 transition-all duration-200"
+                style={{
+                  borderColor: isSelected ? role.accent : '#e2e8f0',
+                  background: isSelected ? role.accentLight : '#ffffff',
+                  boxShadow: isSelected
+                    ? `0 0 0 3px ${role.accent}22`
+                    : 'none',
+                  cursor: 'pointer',
+                }}
+                aria-pressed={isSelected}
+              >
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200"
+                  style={{
+                    background: isSelected ? role.accent : '#f1f5f9',
+                  }}
+                >
+                  <Icon
+                    name={role.icon}
+                    size={18}
+                    color={isSelected ? '#ffffff' : '#94a3b8'}
+                  />
+                </div>
+                <span
+                  className="text-xs font-semibold leading-none"
+                  style={{ color: isSelected ? role.accent : '#334155' }}
+                >
+                  {role.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {errors.role && (
+          <p className="mt-2 text-xs" style={{ color: '#ef4444' }}>
+            {errors.role}
+          </p>
+        )}
+        {selectedRoleData && (
+          <p className="mt-2 text-xs text-center" style={{ color: '#94a3b8' }}>
+            {selectedRoleData.description}
+          </p>
+        )}
       </div>
-      <div>
-        <Input
+
+      {/* ── Step 2: Email ── */}
+      <div className="mb-4">
+        <label
+          htmlFor="login-email"
+          className="block text-sm font-medium mb-1.5"
+          style={{ color: '#334155' }}
+        >
+          Email Address
+        </label>
+        <input
+          id="login-email"
           type="email"
-          label="Email Address"
-          placeholder="Enter your email"
-          value={formData?.email}
-          onChange={(e) => handleChange('email', e?.target?.value)}
-          error={errors?.email}
-          required
-          className="text-base md:text-lg"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            clearError('email');
+            clearError('auth');
+          }}
+          style={inputFocusStyle('email')}
+          onFocus={(e) => {
+            e.target.style.borderColor = accent;
+            e.target.style.boxShadow = `0 0 0 3px ${accent}22`;
+            e.target.style.background = '#fff';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = errors.email ? '#ef4444' : '#e2e8f0';
+            e.target.style.boxShadow = 'none';
+            e.target.style.background = '#f8fafc';
+          }}
         />
+        {errors.email && (
+          <p className="mt-1 text-xs" style={{ color: '#ef4444' }}>
+            {errors.email}
+          </p>
+        )}
       </div>
-      <div className="relative">
-        <Input
-          type={showPassword ? 'text' : 'password'}
-          label="Password"
-          placeholder="Enter your password"
-          value={formData?.password}
-          onChange={(e) => handleChange('password', e?.target?.value)}
-          error={errors?.password}
-          required
-          className="text-base md:text-lg"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-[42px] p-2 hover:bg-muted rounded-lg transition-smooth"
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
-        >
-          <Icon name={showPassword ? 'EyeOff' : 'Eye'} size={20} color="var(--color-muted-foreground)" />
-        </button>
-      </div>
-      <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/forgot-password')}
-          className="text-sm md:text-base text-primary hover:text-primary/80 font-medium transition-smooth"
-        >
-          Forgot Password?
-        </button>
-      </div>
-      <Button
-        type="submit"
-        variant="default"
-        size="lg"
-        fullWidth
-        loading={isLoading}
-        className="mt-6 md:mt-8 text-base md:text-lg"
-      >
-        Sign In Securely
-      </Button>
-      <div className="text-center pt-4 md:pt-6">
-        <p className="text-sm md:text-base text-muted-foreground">
-          Don't have an account?{' '}
+
+      {/* ── Step 3: Password ── */}
+      <div className="mb-2">
+        <div className="flex items-center justify-between mb-1.5">
+          <label
+            htmlFor="login-password"
+            className="block text-sm font-medium"
+            style={{ color: '#334155' }}
+          >
+            Password
+          </label>
           <button
             type="button"
-            onClick={() => navigate('/register')}
-            className="text-primary hover:text-primary/80 font-medium transition-smooth"
+            onClick={() => navigate('/forgot-password')}
+            className="text-xs font-medium"
+            style={{ color: accent }}
           >
-            Create Account
+            Forgot password?
           </button>
-        </p>
+        </div>
+        <div className="relative">
+          <input
+            id="login-password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              clearError('password');
+              clearError('auth');
+            }}
+            style={{ ...inputFocusStyle('password'), paddingRight: '42px' }}
+            onFocus={(e) => {
+              e.target.style.borderColor = accent;
+              e.target.style.boxShadow = `0 0 0 3px ${accent}22`;
+              e.target.style.background = '#fff';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = errors.password ? '#ef4444' : '#e2e8f0';
+              e.target.style.boxShadow = 'none';
+              e.target.style.background = '#f8fafc';
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            style={{ color: '#94a3b8' }}
+          >
+            <Icon name={showPassword ? 'EyeOff' : 'Eye'} size={17} color="#94a3b8" />
+          </button>
+        </div>
+        {errors.password && (
+          <p className="mt-1 text-xs" style={{ color: '#ef4444' }}>
+            {errors.password}
+          </p>
+        )}
       </div>
+
+      {/* ── Auth error ── */}
+      {errors.auth && (
+        <div
+          className="mt-3 px-4 py-2.5 rounded-lg flex items-start gap-2"
+          style={{ background: '#fef2f2', border: '1px solid #fecaca' }}
+        >
+          <Icon name="AlertCircle" size={15} color="#ef4444" />
+          <p className="text-xs leading-relaxed" style={{ color: '#dc2626' }}>
+            {errors.auth}
+          </p>
+        </div>
+      )}
+
+      {/* ── Submit ── */}
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="mt-6 w-full py-3 px-6 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-95"
+        style={{
+          background: isLoading
+            ? '#94a3b8'
+            : `linear-gradient(135deg, ${accent}, ${accent}cc)`,
+          boxShadow: isLoading ? 'none' : `0 4px 14px ${accent}44`,
+          cursor: isLoading ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {isLoading ? (
+          <>
+            <svg
+              className="animate-spin"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+            Signing In…
+          </>
+        ) : (
+          <>
+            <Icon name="LogIn" size={16} color="white" />
+            Sign In Securely
+          </>
+        )}
+      </button>
     </form>
   );
 };

@@ -7,6 +7,9 @@ import Select from '../../../components/ui/Select';
 const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescription, patientData }) => {
   const [formData, setFormData] = useState({
     patientId: '',
+    patientName: '',
+    patientAge: '',
+    patientPhone: '',
     medication: '',
     genericName: '',
     dosage: '',
@@ -100,7 +103,7 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
 
   const checkDrugInteractions = () => {
     const newWarnings = [];
-    
+
     if (patientData?.allergies?.includes('Penicillin') && formData?.medication?.toLowerCase()?.includes('amoxicillin')) {
       newWarnings?.push({
         severity: 'high',
@@ -108,8 +111,8 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
       });
     }
 
-    if (patientData?.currentMedications?.some(med => med?.includes('Warfarin')) && 
-        formData?.medication?.toLowerCase()?.includes('aspirin')) {
+    if (patientData?.currentMedications?.some(med => med?.includes('Warfarin')) &&
+      formData?.medication?.toLowerCase()?.includes('aspirin')) {
       newWarnings?.push({
         severity: 'medium',
         message: 'Potential interaction with Warfarin. Monitor INR levels closely.'
@@ -128,6 +131,9 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
   const handleClose = () => {
     setFormData({
       patientId: '',
+      patientName: '',
+      patientAge: '',
+      patientPhone: '',
       medication: '',
       genericName: '',
       dosage: '',
@@ -172,9 +178,8 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
               {warnings?.map((warning, index) => (
                 <div
                   key={index}
-                  className={`flex items-start gap-3 p-4 rounded-lg border ${
-                    warning?.severity === 'high' ?'bg-error/10 border-error/20 text-error' :'bg-warning/10 border-warning/20 text-warning'
-                  }`}
+                  className={`flex items-start gap-3 p-4 rounded-lg border ${warning?.severity === 'high' ? 'bg-error/10 border-error/20 text-error' : 'bg-warning/10 border-warning/20 text-warning'
+                    }`}
                 >
                   <Icon name="AlertTriangle" size={20} className="flex-shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
@@ -189,6 +194,37 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
           )}
 
           <div className="space-y-6">
+            {!patientData && (
+              <div className="bg-muted/30 p-4 rounded-lg border border-border space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Patient Details</h3>
+                <Input
+                  label="Patient Name"
+                  placeholder="Full Name"
+                  value={formData.patientName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, patientName: e.target.value }))}
+                  required
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Age"
+                    type="number"
+                    placeholder="Age"
+                    value={formData.patientAge}
+                    onChange={(e) => setFormData(prev => ({ ...prev, patientAge: e.target.value }))}
+                    required
+                  />
+                  <Input
+                    label="Phone Number"
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={formData.patientPhone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, patientPhone: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="relative">
               <Input
                 label="Medication Name"
@@ -201,7 +237,7 @@ const PrescriptionCreationModal = ({ isOpen, onClose, onSave, editingPrescriptio
                 }}
                 required
               />
-              
+
               {showDrugSearch && searchResults?.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-popover border border-border rounded-lg shadow-elevation-3 max-h-64 overflow-y-auto z-10">
                   {searchResults?.map((med, index) => (
