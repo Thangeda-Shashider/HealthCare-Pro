@@ -67,7 +67,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Trust badges */}
+          {/* Trust badges
           <div className="flex items-center justify-center gap-5 mt-6 flex-wrap">
             <div className="flex items-center gap-1.5">
               <Icon name="Shield" size={13} color="#0d9488" />
@@ -83,7 +83,7 @@ const Login = () => {
               <Icon name="CheckCircle" size={13} color="#1d4ed8" />
               <span className="text-xs" style={{ color: '#64748b' }}>GDPR Certified</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
 
