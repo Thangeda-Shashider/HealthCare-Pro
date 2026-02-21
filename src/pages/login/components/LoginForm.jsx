@@ -329,6 +329,19 @@ const LoginForm = () => {
           </>
         )}
       </button>
+
+      {/* ── Sign-up link ── */}
+      <p className="text-center text-sm mt-5" style={{ color: '#64748b' }}>
+        Don&apos;t have an account?{' '}
+        <button
+          type="button"
+          onClick={() => navigate('/signup')}
+          className="font-semibold hover:underline"
+          style={{ color: accent }}
+        >
+          Create one
+        </button>
+      </p>
     </form>
   );
 };
