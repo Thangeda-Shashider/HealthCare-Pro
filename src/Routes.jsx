@@ -9,6 +9,7 @@ import AdministratorDashboard from './pages/administrator-dashboard';
 import PatientDashboard from './pages/patient-dashboard';
 import Login from './pages/login';
 import Signup from './pages/signup';
+import ForgotPassword from './pages/forgot-password';
 import PrescriptionManagement from './pages/prescription-management';
 import PatientManagement from './pages/patient-management';
 import ClinicalTools from './pages/clinical-tools';
@@ -27,6 +28,7 @@ const Routes = () => {
           <Route path="/patient-dashboard" element={<PatientDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/prescription-management" element={<PrescriptionManagement />} />
           <Route path="/patient-management" element={<PatientManagement />} />
           <Route path="/clinical-tools" element={<ClinicalTools />} />
