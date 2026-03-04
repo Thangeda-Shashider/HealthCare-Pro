@@ -1,6 +1,7 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import PriorityBadge from '../../../components/ui/PriorityBadge';
 
 const ConfirmationModal = ({ isOpen, onClose, appointmentDetails }) => {
   if (!isOpen) return null;
@@ -71,6 +72,20 @@ const ConfirmationModal = ({ isOpen, onClose, appointmentDetails }) => {
                 </p>
               </div>
             </div>
+            {appointmentDetails?.urgency && (
+              <div className="flex items-start gap-3">
+                <Icon name="AlertTriangle" size={20} color="var(--color-warning)" />
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-1">Urgency / Priority</p>
+                  <div className="flex items-center gap-2">
+                    <PriorityBadge level={appointmentDetails?.urgency} />
+                    <span className="text-sm md:text-base font-semibold text-foreground capitalize">
+                      {appointmentDetails?.urgency}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-start gap-3">
               <Icon name="DollarSign" size={20} color="var(--color-primary)" />

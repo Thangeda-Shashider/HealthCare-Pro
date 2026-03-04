@@ -146,6 +146,10 @@ const AppointmentCalendar = ({ selectedDate, onDateSelect, availableSlots, onSlo
           <h4 className="text-base md:text-lg font-semibold text-foreground mb-4 font-heading">
             Available Time Slots
           </h4>
+          <p className="text-xs text-error mb-2">
+            Slots labeled "EM" are reserved for emergency/priority cases and will be
+            prioritized if you indicate high urgency.
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
             {timeSlots?.map((slot) => (
               <button
@@ -166,6 +170,9 @@ const AppointmentCalendar = ({ selectedDate, onDateSelect, availableSlots, onSlo
                       <Icon name="Sparkles" size={12} />
                       AI Pick
                     </span>
+                  )}
+                  {slot?.isEmergencySlot && (
+                    <span className="text-xs text-error font-semibold">EM</span>
                   )}
                 </div>
               </button>

@@ -102,6 +102,13 @@ const BookingForm = ({ onSubmit, selectedDoctor, selectedDate, selectedSlot }) =
           error={errors?.urgencyLevel}
           placeholder="Select urgency level"
         />
+        {formData?.urgencyLevel && (
+          <p className="text-xs text-muted-foreground">
+            Selecting a higher urgency will push your request toward the front of the
+            doctor&apos;s queue. Emergency cases are given an emergency quota and
+            handled before other appointments.
+          </p>
+        )}
 
         <Input
           label="Additional Notes (Optional)"

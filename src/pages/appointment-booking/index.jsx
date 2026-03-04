@@ -113,7 +113,7 @@ const AppointmentBooking = () => {
     '2025-12-29': {
       available: 12,
       slots: [
-      { time: '09:00 AM', available: true, aiRecommended: true },
+      { time: '09:00 AM', available: true, aiRecommended: true, isEmergencySlot: true },
       { time: '09:30 AM', available: true, aiRecommended: false },
       { time: '10:00 AM', available: true, aiRecommended: true },
       { time: '10:30 AM', available: false, aiRecommended: false },
@@ -126,7 +126,7 @@ const AppointmentBooking = () => {
     '2025-12-30': {
       available: 8,
       slots: [
-      { time: '09:00 AM', available: true, aiRecommended: false },
+      { time: '09:00 AM', available: true, aiRecommended: false, isEmergencySlot: true },
       { time: '10:00 AM', available: true, aiRecommended: true },
       { time: '11:00 AM', available: false, aiRecommended: false },
       { time: '02:00 PM', available: true, aiRecommended: false },
@@ -136,7 +136,7 @@ const AppointmentBooking = () => {
     '2025-12-31': {
       available: 5,
       slots: [
-      { time: '09:00 AM', available: true, aiRecommended: true },
+      { time: '09:00 AM', available: true, aiRecommended: true, isEmergencySlot: true },
       { time: '10:00 AM', available: false, aiRecommended: false },
       { time: '11:00 AM', available: true, aiRecommended: false }]
 
@@ -184,7 +184,8 @@ const AppointmentBooking = () => {
       time: selectedSlot?.time,
       location: selectedDoctor?.location,
       type: formData?.appointmentType,
-      fee: selectedDoctor?.consultationFee
+      fee: selectedDoctor?.consultationFee,
+      urgency: formData?.urgencyLevel // capture priority information
     };
     setAppointmentDetails(details);
     setShowConfirmation(true);

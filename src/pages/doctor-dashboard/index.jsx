@@ -12,13 +12,20 @@ import CalendarSyncStatus from './components/CalendarSyncStatus';
 import UrgentNotificationBanner from './components/UrgentNotificationBanner';
 import PatientProfileModal from './components/PatientProfileModal';
 import CreateTaskModal from './components/CreateTaskModal';
+import PriorityBadge from '../../components/ui/PriorityBadge';
+import { sortByPriorityAndTime } from '../../utils/priorityScheduler';
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date('2025-12-28'));
-  const [urgentNotification, setUrgentNotification] = useState(null);
+  const [urgentNotification, setUrgentNotification] = useState({
+    title: 'Priority scheduling enabled',
+    message: "Appointments marked 'urgent' or 'emergency' are automatically moved to the top of your schedule.",
+    priority: 'high',
+    time: 'Now'
+  });
   const [selectedTask, setSelectedTask] = useState(null);
   const [showPatientsModal, setShowPatientsModal] = useState(false);
   const [showAllTasksModal, setShowAllTasksModal] = useState(false);
@@ -33,6 +40,7 @@ const DoctorDashboard = () => {
       duration: "30 min",
       type: "consultation",
       status: "scheduled",
+      urgencyLevel: "urgent",
       age: 34,
       gender: "Female",
       reason: "Persistent headaches for the past week, accompanied by mild dizziness and sensitivity to light"
@@ -44,6 +52,7 @@ const DoctorDashboard = () => {
       duration: "45 min",
       type: "follow-up",
       status: "in-progress",
+      urgencyLevel: "routine",
       age: 56,
       gender: "Male",
       reason: "Follow-up consultation for diabetes management and review of recent blood sugar monitoring results"
@@ -55,6 +64,7 @@ const DoctorDashboard = () => {
       duration: "30 min",
       type: "checkup",
       status: "scheduled",
+      urgencyLevel: "routine",
       age: 28,
       gender: "Female",
       reason: "Annual health checkup and vaccination status review"
@@ -66,6 +76,7 @@ const DoctorDashboard = () => {
       duration: "60 min",
       type: "emergency",
       status: "scheduled",
+      urgencyLevel: "emergency",
       age: 42,
       gender: "Male",
       reason: "Severe chest pain and shortness of breath - requires immediate attention and cardiac evaluation"
@@ -77,6 +88,7 @@ const DoctorDashboard = () => {
       duration: "30 min",
       type: "consultation",
       status: "scheduled",
+      urgencyLevel: "moderate",
       age: 45,
       gender: "Female",
       reason: "Chronic back pain management consultation"
@@ -88,11 +100,15 @@ const DoctorDashboard = () => {
       duration: "45 min",
       type: "follow-up",
       status: "scheduled",
+      urgencyLevel: "moderate",
       age: 61,
       gender: "Male",
       reason: "Post-surgery follow-up and wound healing assessment"
     }
   ];
+
+  // sort today's appointments by urgency so high‑priority and emergency cases bubble up
+  const prioritizedAppointments = sortByPriorityAndTime(todayAppointments);
 
   const [pendingTasks, setPendingTasks] = useState([
     {
@@ -265,7 +281,7 @@ const DoctorDashboard = () => {
                 Doctor Dashboard
               </h1>
               <p className="text-sm md:text-base text-muted-foreground">
-                Welcome back, Dr. Smith. You have 6 appointments scheduled for today.
+                Welcome back, Dr. Smith. You have {prioritizedAppointments.length} appointments scheduled for today.
               </p>
             </div>
 
@@ -286,6 +302,10 @@ const DoctorDashboard = () => {
             </div>
 
             <div className="mb-6">
+              <p className="text-sm text-muted-foreground mb-2">
+                Appointments below are automatically ordered by urgency/priority
+                (emergency cases first).
+              </p>
               <PatientSearchBar
                 recentPatients={recentPatients}
                 onPatientSelect={handlePatientSelect}
@@ -320,7 +340,7 @@ const DoctorDashboard = () => {
                   </div>
 
                   <div className="space-y-4">
-                    {todayAppointments?.map((appointment) => (
+                    {prioritizedAppointments?.map((appointment) => (
                       <DailyScheduleCard
                         key={appointment?.id}
                         appointment={appointment}

@@ -11,6 +11,7 @@ A modern React-based project utilizing the latest frontend technologies and tool
 - **React Router v6** - Declarative routing for React applications
 - **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
 - **Form Management** - React Hook Form for efficient form handling
+- **Priority Scheduling** - Requests are tagged with urgency levels and doctors see appointments ordered by priority; emergency slots are reserved and highlighted.
 - **Animation** - Framer Motion for smooth UI animations
 - **Testing** - Jest and React Testing Library setup
 

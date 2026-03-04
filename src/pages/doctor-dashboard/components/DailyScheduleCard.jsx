@@ -1,6 +1,7 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import PriorityBadge from '../../../components/ui/PriorityBadge';
 
 const DailyScheduleCard = ({ appointment, onViewRecord, onCreatePrescription, onStartConsultation }) => {
   const getStatusColor = (status) => {
@@ -31,9 +32,14 @@ const DailyScheduleCard = ({ appointment, onViewRecord, onCreatePrescription, on
             <Icon name={getTypeIcon(appointment?.type)} size={20} color="var(--color-primary)" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-base md:text-lg font-semibold text-foreground truncate">
-              {appointment?.patientName}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base md:text-lg font-semibold text-foreground truncate">
+                {appointment?.patientName}
+              </h3>
+              {appointment?.urgencyLevel && (
+                <PriorityBadge level={appointment?.urgencyLevel} />
+              )}
+            </div>
             <p className="text-xs md:text-sm text-muted-foreground">
               {appointment?.time} • {appointment?.duration}
             </p>
